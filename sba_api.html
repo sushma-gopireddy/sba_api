@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+         background-color: yellowgreen;
+    }
+    h1 {
+        text-align: center;
+    }
+
+</style>
+<body>
+    <div class="btnClass">
+        <button id="getBtn" type="button">Get Poetry Data</button>
+    </div>
+    <div id="content" class="contentClass">
+
+    </div>
+    <script>
+         const base_url = "https://poetrydb.org/title/Ozymandias/lines.json";
+         const getBtn = document.getElementById('getBtn');
+         getBtn.addEventListener('click', async () => {
+            response = await fetch(base_url);
+            data = await response.json();
+            random_index = Math.floor(Math.random() * data[0].lines.length)
+            random_poetry = data[0].lines[random_index];
+            alert(random_poetry);
+
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = "<h2><b>"+random_poetry+"</b></h2>";
+         });
+
+    </script>
+</body>
+</html>
