@@ -16,25 +16,51 @@
 </style>
 <body>
     <div class="btnClass">
-        <button id="getBtn" type="button">Get Poetry Data</button>
+        <label for="stateSelect">Choose a US state:</label>
+        <select id="stateSelect">
+            <option>Loading states...</option>
+        </select>
     </div>
     <div id="content" class="contentClass">
 
     </div>
     <script>
-         const base_url = "https://poetrydb.org/title/Ozymandias/lines.json";
-         const getBtn = document.getElementById('getBtn');
-         getBtn.addEventListener('click', async () => {
-            response = await fetch(base_url);
-            data = await response.json();
-            random_index = Math.floor(Math.random() * data[0].lines.length)
-            random_poetry = data[0].lines[random_index];
-            alert(random_poetry);
+         const censusUrl = "https://api.census.gov/data/2019/pep/population?get=NAME&for=state:*";
+         const stateSelect = document.getElementById('stateSelect');
+         const contentDiv = document.getElementById('content');
 
-            const contentDiv = document.getElementById('content');
-            contentDiv.innerHTML = "<h2><b>"+random_poetry+"</b></h2>";
+         async function loadStates() {
+            try {
+                stateSelect.innerHTML = '<option>Loading states...</option>';
+                const resp = await fetch(censusUrl);
+
+                if (!resp.ok) {
+                    throw new Error('Response Error');
+                }
+                const json = await resp.json();
+
+                const opts = ['<option value="">-- Select a state --</option>'];
+                for (let i = 1; i < json.length; i++) {
+                    const r = json[i];
+                    opts.push(`<option value="${r[1]}">${r[0]}</option>`);
+                }
+                stateSelect.innerHTML = opts.join('');
+            } catch (err) {
+                stateSelect.innerHTML = '<option value="">Unable to load states</option>';
+                contentDiv.innerText = 'Error loading states: ' + err.message;
+            }
+         }
+
+         stateSelect.addEventListener('change', () => {
+            const sel = stateSelect.options[stateSelect.selectedIndex];
+            if (!sel || !sel.value) {
+                contentDiv.innerHTML = '';
+                return;
+            }
+            contentDiv.innerHTML = `<h2><b>${sel.text} (FIPS: ${sel.value})</b></h2>`;
          });
 
+         window.onload = loadStates;
     </script>
 </body>
 </html>
