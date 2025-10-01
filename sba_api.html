@@ -24,10 +24,56 @@
     <div id="content" class="contentClass">
 
     </div>
+
+    <div class="navClass" style="margin-top:12px;">
+        <button id="prevBtn" disabled>Previous State</button>
+        <button id="nextBtn" disabled>Next State</button>
+    </div>
+
     <script>
          const censusUrl = "https://api.census.gov/data/2019/pep/population?get=NAME&for=state:*";
          const stateSelect = document.getElementById('stateSelect');
          const contentDiv = document.getElementById('content');
+
+         const prevBtn = document.getElementById('prevBtn');
+         const nextBtn = document.getElementById('nextBtn');
+
+         function findPrevId(selectedId) {
+             previousId = selectedId - 1;
+             //alert(previousId);
+             const opt = stateSelect.options[previousId];
+             if (opt && opt.value){
+                return previousId;
+             } else {
+                return -1;
+             }
+         }
+
+         function findNextId(selectedId) {
+            nextId = selectedId + 1;
+            //alert(nextId);
+            const opt = stateSelect.options[nextId];
+           // alert(opt.value);
+            if (opt && opt.value){
+                return nextId;
+            } else {
+                return -1;
+            }
+         }
+
+         function updateNavButtons() {
+             const cur = stateSelect.selectedIndex;
+             if ( findNextId(cur) === -1){
+                nextBtn.disabled = true;
+             } else {
+                nextBtn.disabled = false;
+             }
+             if (findPrevId(cur) === -1){
+                prevBtn.disabled = true;
+             }else {
+                prevBtn.disabled = false;
+             }
+         }
 
          async function loadStates() {
             try {
@@ -45,16 +91,18 @@
                     opts.push(`<option value="${r[1]}">${r[0]}</option>`);
                 }
                 stateSelect.innerHTML = opts.join('');
+                //updateNavButtons();
             } catch (err) {
                 stateSelect.innerHTML = '<option value="">Unable to load states</option>';
                 contentDiv.innerText = 'Error loading states: ' + err.message;
             }
          }
 
-         stateSelect.addEventListener('change', async () => {
+         async function onStateChange() {
             const sel = stateSelect.options[stateSelect.selectedIndex];
             if (!sel || !sel.value) {
                 contentDiv.innerHTML = '';
+                updateNavButtons();
                 return;
             }
 
@@ -92,7 +140,29 @@
                 contentDiv.innerHTML = html;
             } catch (err) {
                 contentDiv.innerHTML = 'Error fetching weather: ' + err.message;
+            } finally {
+                updateNavButtons();
             }
+         }
+
+         stateSelect.addEventListener('change', async () => {
+            await onStateChange();
+         });
+
+         prevBtn.addEventListener('click', async () => {
+             const idx = findPrevId(stateSelect.selectedIndex);
+             if (idx !== -1) {
+                 stateSelect.selectedIndex = idx;
+                 await onStateChange();
+             }
+         });
+
+         nextBtn.addEventListener('click', async () => {
+             const idx = findNextId(stateSelect.selectedIndex);
+             if (idx !== -1) {
+                 stateSelect.selectedIndex = idx;
+                 await onStateChange();
+             }
          });
 
          window.onload = loadStates;
