@@ -51,13 +51,48 @@
             }
          }
 
-         stateSelect.addEventListener('change', () => {
+         stateSelect.addEventListener('change', async () => {
             const sel = stateSelect.options[stateSelect.selectedIndex];
             if (!sel || !sel.value) {
                 contentDiv.innerHTML = '';
                 return;
             }
-            contentDiv.innerHTML = `<h2><b>${sel.text} (FIPS: ${sel.value})</b></h2>`;
+
+            const stateName = sel.text;
+            contentDiv.innerHTML = `<p>Loading weather for ${stateName}...</p>`;
+
+            try {
+                const weatherUrl = `https://goweather.xyz/weather/${stateName}`;
+                const resp = await fetch(weatherUrl);
+                if (!resp.ok) throw new Error('Weather API response error, Please choose another state');
+
+                const weather = await resp.json();
+
+                let html = `<h2><b>${stateName}</b></h2>`;
+
+                if (!weather.message) {
+                    html += `<p><b>Temperature:</b> ${weather.temperature || 'N/A'}<br/>
+                             <b>Wind:</b> ${weather.wind || 'N/A'}<br/>
+                             <b>Description:</b> ${weather.description || 'N/A'}</p>`;
+                } else {
+                    html += '<p>No current weather data available. Please choose another state.</p>';
+                }
+
+                if (weather.forecast.length > 0) {
+                    html += '<h3>Forecast</h3><ul>';
+                    for (const f of weather.forecast) {
+                        const day = f.day;
+                        const temp = f.temperature;
+                        const wind = f.wind;
+                        html += `<li>Day ${day}: ${temp} - ${wind}</li>`;
+                    }
+                    html += '</ul>';
+                }
+
+                contentDiv.innerHTML = html;
+            } catch (err) {
+                contentDiv.innerHTML = 'Error fetching weather: ' + err.message;
+            }
          });
 
          window.onload = loadStates;
