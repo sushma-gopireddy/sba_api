@@ -6,13 +6,93 @@
     <title>Document</title>
 </head>
 <style>
-    body {
-         background-color: yellowgreen;
-    }
-    h1 {
-        text-align: center;
+    html,body{
+        height:100%;
+        margin:0;
+        padding:0;
+        background-color: #9acd32; 
+        color: #0b1a2b;
     }
 
+    .btnClass, .contentClass, .navClass {
+        max-width:720px;
+        margin:18px auto;
+        padding:0 12px;
+    }
+
+    .btnClass {
+        display:flex;
+        align-items:center;
+        gap:12px;
+    }
+
+    label[for="stateSelect"]{
+        font-weight:600;
+        color:#556;
+        min-width:140px;
+    }
+
+    select#stateSelect{
+        flex:1;
+        padding:8px 10px;
+        border-radius:6px;
+        border:1px solid rgba(0,0,0,0.12);
+        background:white;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04) inset;
+        font-size:14px;
+    }
+
+    #content.contentClass {
+        background: #ffffff;
+        border-radius:8px;
+        padding:16px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        min-height:60px;
+        margin-top:12px;
+    }
+
+    #content h2{
+        margin:0 0 8px 0;
+        font-size:18px;
+        color:#234f86;
+    }
+
+    #content p{
+        margin:6px 0;
+        color:#263238;
+        line-height:1.4;
+    }
+
+    #content ul{
+        margin:8px 0 0 18px;
+        padding:0;
+    }
+
+    .navClass {
+        display:flex;
+        justify-content:center;
+        gap:12px;
+        margin-top:10px;
+    }
+
+    .navClass button {
+        padding:8px 14px;
+        border-radius:6px;
+        border: none;
+        background: #2b6cb0;
+        color: #fff;
+        font-weight:600;
+        box-shadow: 0 4px 10px rgba(43,108,176,0.18);
+    }
+
+    .navClass button:hover:not([disabled]) {
+        background: #234f86;
+    }
+
+    .navClass button[disabled] {
+        opacity:0.55;
+        box-shadow:none;
+    } 
 </style>
 <body>
     <div class="btnClass">
